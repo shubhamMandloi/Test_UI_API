@@ -15,6 +15,8 @@ This repository contains test automation for the CoinMarketCap covering UI and A
  @displayRows : individual row
  @Filter : individual row
 
+Selenium version used : 4.22.0 , implicity chrome webdriver binaries downnloaded
+
  Command to run : 
  mvn test
 
