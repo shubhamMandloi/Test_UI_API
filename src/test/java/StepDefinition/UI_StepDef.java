@@ -27,16 +27,11 @@ public class UI_StepDef {
     @When("I select {string} dropdown with value {string}")
     public void selectRows(String dropdown, String value) {
         WebElement showRows = driver.findElement(By.xpath("//span[.='Show rows']"));
-
-        Actions action = new Actions(driver);
-        action.moveToElement(showRows).build().perform();
-        //SeleniumUtils.click(driver, showRows);
-//        WebElement rowsDropdown = driver.findElement(By.xpath("//span[.='Show rows']/following-sibling::div")).click();
-        driver.findElement(By.xpath("//span[.='Show rows']/following-sibling::div")).click();
-        //WebElement rowsDropdown = driver.findElement(By.xpath("//div[.='100']"));
-        //action.moveToElement(rowsDropdown).build().perform();
-        //SeleniumUtils.click(driver, rowsDropdown);
-        WebElement valueRows = driver.findElement(By.xpath("//button='"+value+"'"));
+        SeleniumUtils.click(driver, showRows);
+        WebElement rowsDropdown = driver.findElement(By.xpath("//span[.='Show rows']/following-sibling::div"));
+        SeleniumUtils.click(driver, rowsDropdown);
+        WebElement valueRows = driver.findElement(By.xpath("//button='" + value + "'"));
+        SeleniumUtils.click(driver, valueRows);
     }
 
     @Then("I verify that {int} rows are displayed")
@@ -87,7 +82,7 @@ public class UI_StepDef {
         List<WebElement> priceList = driver.findElements(By.xpath("//table/tbody/tr/td[4]//span"));
         for (WebElement eachPrice : priceList) {
             double priceValue = Double.parseDouble(eachPrice.getText()
-                            .replaceAll("\\$", ""));
+                    .replaceAll("\\$", ""));
             if (!(priceValue > 100 && priceValue < 1000)) {
                 Assert.fail(" Price value : " + priceValue + " is not in filter range");
             }
