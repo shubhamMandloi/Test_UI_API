@@ -5,6 +5,7 @@ import Utility.PropertiesReader;
 import io.cucumber.java.en.*;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
+import io.restassured.response.ResponseBody;
 
 import java.io.IOException;
 import java.util.Properties;
@@ -13,14 +14,13 @@ import static org.junit.Assert.assertNotNull;
 
 public class API_StepDef {
 
-    Properties prop = new PropertiesReader().loadProperties("src/test/resource/Config.properties");
-    private final String API_KEY = prop.get("API_KEY").toString();
 
-    private int btcID, usdtID, ethID;
+    //Properties prop = new PropertiesReader().loadProperties("src/test/resource/Config.properties");
+    //private  String API_KEY = prop.get("API_KEY").toString();
+    final String API_KEY = "28e1df85-907b-4f75-af08-bf4e94836c42";
+    private int btcID, usdtID, ethID,bobID;
     private float btcPriceInBOB, usdtPriceInBOB, ethPriceInBOB;
 
-    public API_StepDef() throws IOException {
-    }
 
     @Given("I have the CoinMarketCap API key")
     public void i_have_the_coinmarketcap_api_key() {
@@ -32,17 +32,20 @@ public class API_StepDef {
     public void i_retrieve_cryptocurrency_ids() {
         Response response = RestAssured.given()
                 .header("X-CMC_PRO_API_KEY", API_KEY)
-                .queryParam("symbol", "BTC,USDT,ETH")
+                .queryParam("symbol", "BTC,USDT,ETH,BOB")
                 .get("/v1/cryptocurrency/map");
 
-        // Extract and save the IDs for BTC, USDT, and ETH
+
         btcID = response.jsonPath().getInt("data.find { it.symbol == 'BTC' }.id");
         usdtID = response.jsonPath().getInt("data.find { it.symbol == 'USDT' }.id");
         ethID = response.jsonPath().getInt("data.find { it.symbol == 'ETH' }.id");
+        bobID = response.jsonPath().getInt("data.find { it.symbol == 'BOB' }.id");
+
 
         assertNotNull("BTC ID is required", btcID);
         assertNotNull("USDT ID is required", usdtID);
         assertNotNull("ETH ID is required", ethID);
+        assertNotNull("BOB ID is required", bobID);
     }
 
     @Then("I convert these IDs to Bolivian Boliviano")
@@ -58,19 +61,21 @@ public class API_StepDef {
         System.out.println("USDT Price in BOB: " + usdtPriceInBOB);
         System.out.println("ETH Price in BOB: " + ethPriceInBOB);
 
-        // You can add assertions to verify the prices are returned correctly
+
         assertNotNull("BTC Price in BOB should not be null", btcPriceInBOB);
         assertNotNull("USDT Price in BOB should not be null", usdtPriceInBOB);
         assertNotNull("ETH Price in BOB should not be null", ethPriceInBOB);
     }
 
     private float convertToBoliviano(int currencyID) {
-        Response response = RestAssured.given()
+        Response response2 = RestAssured.given()
                 .header("X-CMC_PRO_API_KEY", API_KEY)
                 .queryParam("id", currencyID)
-                .queryParam("convert", "BOB")
-                .get("/v1/tools/price-conversion");
+                .queryParam("convert","BOB")
+                .queryParam("amount",1)
+                .get("/v2/tools/price-conversion");
 
-        return response.jsonPath().getFloat("data.quote.BOB.price");
+       // String res = response2.jsonPath().getString("status.error_message");
+   return response2.jsonPath().getFloat("data.quote.BOB.price");
     }
 }

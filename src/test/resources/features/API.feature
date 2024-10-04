@@ -1,5 +1,6 @@
 Feature: CoinMarketCap API Testing
 
+  @API
   Scenario: Retrieve and convert cryptocurrency IDs
     Given I have the CoinMarketCap API key
     When I retrieve the ID of bitcoin, usd tether, and Ethereum

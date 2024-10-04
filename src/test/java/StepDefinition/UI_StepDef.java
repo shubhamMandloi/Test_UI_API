@@ -63,7 +63,7 @@ public class UI_StepDef {
         WebElement filterVal1 = driver.findElement(By.xpath("//button[.='" + filterValue1 + "']"));
         SeleniumUtils.click(driver, filterVal1);
 
-        WebElement apply = driver.findElement(By.xpath("//button[.='Apply Filter']"));
+        WebElement apply = driver.findElement(By.xpath("//button[contains(@data-qa-id,'cancel')]"));
         SeleniumUtils.click(driver, apply);
 
         WebElement filter2 = driver.findElement(By.xpath("//button[.='" + filterType2 + "']"));
@@ -71,7 +71,7 @@ public class UI_StepDef {
         WebElement filterVal2 = driver.findElement(By.xpath("//button[.='" + filterValue2 + "']"));
         SeleniumUtils.click(driver, filterVal2);
 
-        apply = driver.findElement(By.xpath("//button[.='Apply Filter']"));
+        apply = driver.findElement(By.xpath("//button[contains(@data-qa-id,'cancel')]"));
         SeleniumUtils.click(driver, apply);
 
         WebElement showResult = driver.findElement(By.xpath("//button[.='Show results']"));

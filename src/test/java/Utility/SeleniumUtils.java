@@ -14,6 +14,7 @@ public class SeleniumUtils {
     public static void click(WebDriver driver, WebElement element) {
         try {
             new WebDriverWait(driver, Duration.ofSeconds(explicitWaitTime)).until(ExpectedConditions.elementToBeClickable(element));
+            Thread.sleep(3000);
             element.click();
 
         } catch (Exception e) {
