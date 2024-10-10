@@ -10,7 +10,7 @@ import io.cucumber.junit.CucumberOptions;
                 "html:target/cucumber-reports",
                 "json:target/cucumber.json"},
         monochrome = true,
-        tags = "@TEST"
+        tags = "@displayRows"
 )
 public class Runner{
 }

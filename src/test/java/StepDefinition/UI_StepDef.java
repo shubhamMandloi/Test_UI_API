@@ -1,5 +1,6 @@
 package StepDefinition;
 
+import Pages.appPage;
 import Utility.SeleniumUtils;
 import io.cucumber.java.en.*;
 import org.junit.Assert;
@@ -7,70 +8,80 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.interactions.Actions;
-import org.openqa.selenium.support.ui.Select;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
+
 
 public class UI_StepDef {
     WebDriver driver;
 
     @Given("I open the CoinMarketCap homepage")
     public void openHomePage() {
+        //System.setProperty("webdriver.chrome.driver", "src/test/resources/chromedriver.exe");
         driver = new ChromeDriver();
         driver.get("https://coinmarketcap.com/");
         driver.manage().window().maximize();
-        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+        //driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
     }
 
     @When("I select {string} dropdown with value {string}")
-    public void selectRows(String dropdown, String value) {
-        WebElement showRows = driver.findElement(By.xpath("//span[.='Show rows']"));
-        SeleniumUtils.click(driver, showRows);
-        WebElement rowsDropdown = driver.findElement(By.xpath("//span[.='Show rows']/following-sibling::div"));
-        SeleniumUtils.click(driver, rowsDropdown);
-        WebElement valueRows = driver.findElement(By.xpath("//button='" + value + "'"));
-        SeleniumUtils.click(driver, valueRows);
+    public void selectRows(String dropdown, String value) throws InterruptedException {
+        appPage obj = new appPage(driver);
+       // WebElement showRows = SeleniumUtils.getElement(driver,By.xpath("//span[.='Show rows']"));
+        //SeleniumUtils.jsClick(driver, showRows);
+        obj.selectRows(value);
+        /*-WebElement rowsDropdown = driver.findElement(By.xpath("//span[.='Show rows']/following-sibling::div"));
+        SeleniumUtils.jsClick(driver, rowsDropdown);
+        WebElement valueRows = driver.findElement(By.xpath("//button[.='" + value + "']"));
+        SeleniumUtils.jsClick(driver, valueRows);*/
+
     }
 
     @Then("I verify that {int} rows are displayed")
-    public void verifyRowsDisplayed(int expectedRows) {
-        List<WebElement> rowsList = driver.findElements(By.xpath("//table[1]//tbody/tr"));
+    public void verifyRowsDisplayed(int expectedRows) throws InterruptedException {
+
+        Thread.sleep(3000);
+        SeleniumUtils.waitForVisible(driver, By.xpath("//table[contains(@class,'cmc-table')]//tbody/tr"));
+        List<WebElement> rowsList = driver.findElements(By.xpath("//table[contains(@class,'cmc-table')]//tbody/tr"));
         Assert.assertEquals(expectedRows, rowsList.size());
+        driver.close();
     }
 
     @When("I click on the {string} button")
     public void clickFiltersButton(String button) {
         WebElement filtersButton = driver.findElement(By.xpath("(//button[.='Filters'])[2]"));
-        SeleniumUtils.click(driver, filtersButton);
+        SeleniumUtils.jsClick(driver, filtersButton);
     }
 
     @When("I apply filters with {string} = {string} and {string} = {string}")
     public void applyFilters(String filterType1, String filterValue1, String filterType2, String filterValue2) {
-        // Add logic to apply MarketCap and Price filters
+
+
+        SeleniumUtils.waitForVisible(driver, By.xpath("//button[normalize-space()='+ Add Filter']"));
         WebElement addFilter = driver.findElement(By.xpath("//button[normalize-space()='+ Add Filter']"));
-        SeleniumUtils.click(driver, addFilter);
+        SeleniumUtils.jsClick(driver, addFilter);
 
 
         WebElement filter1 = driver.findElement(By.xpath("//button[.='" + filterType1 + "']"));
-        SeleniumUtils.click(driver, filter1);
+        SeleniumUtils.jsClick(driver, filter1);
         WebElement filterVal1 = driver.findElement(By.xpath("//button[.='" + filterValue1 + "']"));
-        SeleniumUtils.click(driver, filterVal1);
+        SeleniumUtils.jsClick(driver, filterVal1);
 
-        WebElement apply = driver.findElement(By.xpath("//button[contains(@data-qa-id,'cancel')]"));
-        SeleniumUtils.click(driver, apply);
+        WebElement apply = driver.findElement(By.xpath("//button[contains(@data-qa-id,'apply')]"));
+        SeleniumUtils.jsClick(driver, apply);
 
         WebElement filter2 = driver.findElement(By.xpath("//button[.='" + filterType2 + "']"));
-        SeleniumUtils.click(driver, filter2);
+        SeleniumUtils.jsClick(driver, filter2);
         WebElement filterVal2 = driver.findElement(By.xpath("//button[.='" + filterValue2 + "']"));
-        SeleniumUtils.click(driver, filterVal2);
+        SeleniumUtils.jsClick(driver, filterVal2);
 
-        apply = driver.findElement(By.xpath("//button[contains(@data-qa-id,'cancel')]"));
-        SeleniumUtils.click(driver, apply);
+        apply = driver.findElement(By.xpath("//button[contains(@data-qa-id,'apply')]"));
+        SeleniumUtils.waitForVisible(driver, By.xpath("//button[contains(@data-qa-id,'apply')]"));
+        SeleniumUtils.jsClick(driver, apply);
 
         WebElement showResult = driver.findElement(By.xpath("//button[.='Show results']"));
-        SeleniumUtils.click(driver, showResult);
+        SeleniumUtils.waitForVisible(driver, By.xpath("//button[.='Show results']"));
+        SeleniumUtils.jsClick(driver, showResult);
 
 
     }
@@ -79,7 +90,7 @@ public class UI_StepDef {
     public void verifyFilteredRecords() {
         WebElement filterCheck = driver.findElement(By.xpath("//li[contains(.,'2 More Filters')]"));
 
-        List<WebElement> priceList = driver.findElements(By.xpath("//table/tbody/tr/td[4]//span"));
+        List<WebElement> priceList = driver.findElements(By.xpath("//table[contains(@class,'cmc-table')]/tbody/tr/td[4]//span"));
         for (WebElement eachPrice : priceList) {
             double priceValue = Double.parseDouble(eachPrice.getText()
                     .replaceAll("\\$", ""));
@@ -89,10 +100,11 @@ public class UI_StepDef {
         }
 
 
-        List<WebElement> marketCaps = driver.findElements(By.xpath("//table/tbody/tr/td[8]/p/span[1]"));
+        List<WebElement> marketCaps = driver.findElements(By.xpath("//table[contains(@class,'cmc-table')]/tbody/tr/td[8]//span[contains(@class,'chpohi')]"));
         for (WebElement eachMarketCap : marketCaps) {
+
             double marketCapValue = Double.parseDouble(eachMarketCap
-                    .getText()
+                    .getAttribute("innerHTML")
                     .replaceAll("\\$", "")
                     .replaceAll("B", ""));
             if (!(marketCapValue > 1 && marketCapValue < 10)) {
@@ -100,6 +112,6 @@ public class UI_StepDef {
             }
         }
 
-
+        driver.close();
     }
 }

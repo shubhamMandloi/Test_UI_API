@@ -1,12 +1,12 @@
 Feature: CoinMarketCap UI Testing
 
-  @FrontEnd @displayRows @TEST
+  @UI @displayRows @TEST
   Scenario: Verify 50 rows displayed
     Given I open the CoinMarketCap homepage
     When I select "Show rows" dropdown with value "50"
     Then I verify that 50 rows are displayed
 
-  @FrontEnd @Filter @TEST
+  @UI @Filter @TEST
   Scenario: Apply Filters on CoinMarketCap
     Given I open the CoinMarketCap homepage
     When I click on the "Filters" button

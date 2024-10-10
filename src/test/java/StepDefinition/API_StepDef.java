@@ -1,37 +1,32 @@
 package StepDefinition;
 
-import Utility.PropertiesReader;
 
+import Utility.SeleniumUtils;
 import io.cucumber.java.en.*;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
-import io.restassured.response.ResponseBody;
 
 import java.io.IOException;
-import java.util.Properties;
 
 import static org.junit.Assert.assertNotNull;
 
 public class API_StepDef {
 
 
-    //Properties prop = new PropertiesReader().loadProperties("src/test/resource/Config.properties");
-    //private  String API_KEY = prop.get("API_KEY").toString();
-    final String API_KEY = "28e1df85-907b-4f75-af08-bf4e94836c42";
     private int btcID, usdtID, ethID,bobID;
     private float btcPriceInBOB, usdtPriceInBOB, ethPriceInBOB;
 
-
     @Given("I have the CoinMarketCap API key")
-    public void i_have_the_coinmarketcap_api_key() {
-        assertNotNull("API Key is required", API_KEY);
+    public void i_have_the_coinmarketcap_api_key() throws IOException {
+        assertNotNull("API Key is required", SeleniumUtils.getConfigProperty("API_KEY"));
         RestAssured.baseURI = "https://pro-api.coinmarketcap.com";
     }
 
     @When("I retrieve the ID of bitcoin, usd tether, and Ethereum")
-    public void i_retrieve_cryptocurrency_ids() {
+    public void i_retrieve_cryptocurrency_ids() throws IOException {
+
         Response response = RestAssured.given()
-                .header("X-CMC_PRO_API_KEY", API_KEY)
+                .header("X-CMC_PRO_API_KEY",  SeleniumUtils.getConfigProperty("API_KEY"))
                 .queryParam("symbol", "BTC,USDT,ETH,BOB")
                 .get("/v1/cryptocurrency/map");
 
@@ -49,7 +44,7 @@ public class API_StepDef {
     }
 
     @Then("I convert these IDs to Bolivian Boliviano")
-    public void i_convert_ids_to_bolivian_boliviano() {
+    public void i_convert_ids_to_bolivian_boliviano() throws IOException {
         btcPriceInBOB = convertToBoliviano(btcID);
         usdtPriceInBOB = convertToBoliviano(usdtID);
         ethPriceInBOB = convertToBoliviano(ethID);
@@ -67,9 +62,9 @@ public class API_StepDef {
         assertNotNull("ETH Price in BOB should not be null", ethPriceInBOB);
     }
 
-    private float convertToBoliviano(int currencyID) {
+    private float convertToBoliviano(int currencyID) throws IOException {
         Response response2 = RestAssured.given()
-                .header("X-CMC_PRO_API_KEY", API_KEY)
+                .header("X-CMC_PRO_API_KEY", SeleniumUtils.getConfigProperty("API_KEY"))
                 .queryParam("id", currencyID)
                 .queryParam("convert","BOB")
                 .queryParam("amount",1)
