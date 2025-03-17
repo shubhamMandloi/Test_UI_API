@@ -12,3 +12,13 @@ Feature: CoinMarketCap UI Testing
     When I click on the "Filters" button
     And I apply filters with "Market Cap" = "$1B - $10B" and "Price" = "$101 - $1,000"
     Then I verify the records displayed are correct based on the applied filter
+
+
+  @UI @TestAutomate @TEST
+  Scenario: Navigate and capture product and price
+    Given I open the TestAutomation homepage
+    When I click on the label
+    Then I fetch and navigate to all product and price
+
+
+
